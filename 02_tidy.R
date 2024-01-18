@@ -1,3 +1,4 @@
+tidy <- function(odds_tbl){
 # tidy the odds_tbl returned from the odds api website.
 # assumes you have already run 01_request_odds.R
 
@@ -5,7 +6,7 @@
 
 library(tidyverse)
 library(jsonlite)
-source('decimal_to_american.R')
+source('american_to_decimal.R')
 
 # parameters --------------------------------------------------------------
 
@@ -19,4 +20,9 @@ odds_tbl %>%
   unnest(cols = c(bookmakers)) %>% 
   unnest(cols = c(markets), names_sep = '_') %>% 
   unnest(cols = c(markets_outcomes)) %>%
+  mutate(price.decimal = map_dbl(.f = american_to_decimal, .x = price)) %>%
   filter(title %in% ny.sportsbooks) -> odds_tbl
+
+return(odds_tbl)
+
+}

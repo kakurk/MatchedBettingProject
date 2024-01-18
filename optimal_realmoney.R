@@ -1,39 +1,23 @@
-optimal.realmoney <- function(bookie_odds, laybet_odds, bookiebet){
+optimal.realmoney <- function(bookie.stake, bookie.odds, lay.odds){
   # estimate optimal real money wager
   # in other words, at what laybet would the net profit be the same for the
   # laybet and the bookie bet?
 
-# functions ---------------------------------------------------------------
-
-  bookiebet_profit <- function(lay_wager, lay_odds, bookie_wager, bookie_odds){
-    # what would the profit be if the bookiebet wins?
-    (bookie_wager*bookie_odds)-bookie_wager-lay_wager
-  }
-  
-  laybet_profit <- function(lay_wager, lay_odds, bookie_wager, bookie_odds){
-    # what would the profit be if the laybet wins?
-    (lay_wager*lay_odds)-lay_wager-bookie_wager
-  }
-  
-  bookiebet_minus_laybet <- function(lay_wager, lay_odds, bookie_wager, bookie_odds){
-    bookiebet_profit(lay_wager, lay_odds, bookie_wager, bookie_odds) - laybet_profit(lay_wager, lay_odds, bookie_wager, bookie_odds)
-  }
-  
 # routine -----------------------------------------------------------------
 
-  laybet_size_root <- uniroot(bookiebet_minus_laybet, 
-                              lower        = 0, 
-                              upper        = 100, 
-                              extendInt    = 'yes', 
-                              lay_odds     = laybet_odds, 
-                              bookie_wager = bookiebet, 
-                              bookie_odds  = bookie_odds)
-  laybet_size      <- laybet_size_root$root
-  bet_profit       <- bookiebet_profit(lay_wager    = laybet_size, 
-                                       lay_odds     = laybet_odds, 
-                                       bookie_wager = bookiebet, 
-                                       bookie_odds  = bookie_odds)
+  # how much would be returned if the bookie bet were to win?
+  bookie.return  <- bookie.stake * bookie.odds
 
-  return(tibble(laybet_size, bet_profit))
+  # which lay bet stake size would match this return?
+  lay.stake      <- bookie.return/lay.odds
+  
+  # what would the return be if the lay bet were to win?
+  lay.return     <- lay.stake * lay.odds
+  
+  # what would be the profit for the lay bet? for the bookie bet?
+  lay.profit    <- lay.return - lay.stake - bookie.stake
+  bookie.profit <- bookie.return - bookie.stake - lay.stake
+
+  return(tibble(lay.stake, bookie.profit, lay.profit))
 
 }
