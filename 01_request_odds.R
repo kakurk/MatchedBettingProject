@@ -1,3 +1,5 @@
+request_odds <- function(sport, market){
+
 # request odds using the odds api https://the-odds-api.com/
 
 # requirements ------------------------------------------------------------
@@ -8,10 +10,9 @@ library(httr2)
 # see https://the-odds-api.com/liveapi/guides/v4/#get-odds for more 
 # information on parameters
 
-apiKey <- 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' # randomized key; obtain from odd-api website
-sport  <- 'americanfootball_nfl' # basketball_nba | soccer_epl | americanfootball_nfl
-region <- 'us' # uk | us | eu | au.
-market <- 'h2h' # h2h | spreads | totals
+apiKey     <- 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' # randomized key; obtain from odd-api website
+region     <- 'us' # uk | us | eu | au.
+oddsFormat <- 'american' # american
 
 # routine -----------------------------------------------------------------
 # the main body of the script.
@@ -19,8 +20,12 @@ market <- 'h2h' # h2h | spreads | totals
 request("https://api.the-odds-api.com") -> req
 
 req |>
-  req_template("GET /v4/sports/{sport}/odds/?apiKey={apiKey}&regions={region}&markets={market}") %>%
+  req_template("GET /v4/sports/{sport}/odds/?apiKey={apiKey}&regions={region}&markets={market}&oddsFormat={oddsFormat}") %>%
   req_perform() -> resp
 
 resp |> 
   resp_body_json(simplifyVector = TRUE) -> odds_tbl
+
+return(odds_tbl)
+
+}
